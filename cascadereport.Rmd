@@ -1,0 +1,58 @@
+---
+title: "Cascade Weir Size Report "
+author: "Bureau of Watershed Protection and Restoration - Anne Arundel County"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+params: 
+  sitename: NA
+  tab1: NA
+  tab2: NA
+  tab3: NA
+  tab4: NA
+fontsize: 10pt
+header-includes:
+   - \usepackage[justification=raggedright,labelfont=bf,singlelinecheck=false]{caption}
+---
+
+$$\\[1in]$$
+
+```{r bwpr_logo_aarivers, echo=FALSE, out.width = '90%'}
+knitr::include_graphics("bwpr_logo_aarivers.jpg")
+```
+
+\newpage
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(leaflet)
+ 
+```
+
+# Data Inputs 
+
+```{r data input summary, text,echo=FALSE,results='asis'}
+cat("### Data inputs summary for ", params$sitename, "\n")
+
+kable(params$tab1, caption = "Summary table of all cascade data inputs:",
+      col.names = c("","Q\\textsubscript{100}","Q\\textsubscript{10}","Q\\textsubscript{2}"))
+
+kable(params$tab2, caption = "Summary table of all scour depth data inputs:",
+      col.names = c("",""))
+
+```
+
+\newpage
+
+# Cascade Weir Sizing Results 
+
+```{r data result summary, text,echo=FALSE,results='asis'}
+cat("### Cascade weir sizing summary for ", params$sitename, "\n")
+
+kable(params$tab3, caption = "Summary of cascade weir sizing results.",
+      col.names = c("","Q\\textsubscript{100}","Q\\textsubscript{10}","Q\\textsubscript{2}"))
+
+kable(params$tab4, caption = "Cascade weir sizing notes.",
+      col.names = c("",""))
+
+```
