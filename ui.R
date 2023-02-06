@@ -157,6 +157,7 @@ ui = fluidPage(id = 'fP',
                tags$head(HTML("<title>SPSC Sizing Tool</title> <link rel='icon' type='image/gif/png' href='logo.png'>"),
                          tags$style(HTML(
                            "
+              .shiny-notification {position:fixed;top: calc(25%);left: calc(10%);}             
               .nav-tabs {font-size: 18px} 
               .navbar{background-color: #16478e !important; padding-left: 20px; margin-left:-20px; padding-right: 15px; margin-right:-15px;padding-top: 20px; margin-top:-20px;}
               .navbar-default .navbar-brand:hover {color: blue;}
@@ -272,15 +273,21 @@ ui = fluidPage(id = 'fP',
                titlePanel(
                  fluidRow(style = "background-color:#16478e; padding-top: 20px; margin-top:-20px; padding-bottom: 20px; margin-bottom:-20px",
                           column(9,h4(("Step Pool Stormwater Conveyance Sizing Tool for Anne Arundel County"),style="font-size:26px;font-style:normal; font-weight: 400; color:#FFFFFF;"),
-                                 p("Note: this tool is provided 'as is' without warranty of any kind, either expressed, implied, or statutory.",style="font-size:11.5px;font-style:italic;color:#FFFFFF;"),
+                                 p("Note: this tool is provided 'as is' without warranty of any kind, either expressed, implied, or statutory.  The user assumes the entire risk as to the quality and performance of the data from this tool.  
+                                   Report is generated using user-developed and user-entered data.  Anne Arundel County makes no claims as to the validity or accuracy of the data used to develop this report or results detailed in the report",style="font-size:11.5px;font-style:italic;color:#FFFFFF;"),
+                                 p("SPSC Sizer v.0.1.0, 02/03/2023",style="font-size:11.5px;font-style:italic;color:#FFFFFF;"),
                                  p("The user assumes the entire risk as to quality and performance of the data from this tool.",style="font-size:11.5px;font-style:italic;color:#FFFFFF;"),
+                                 actionButton(inputId = "info1", label = "",icon = icon("info", lib = "font-awesome"),
+                                                style = "background-color:#505250; color:#FFFFFF; border-color:#080808"),
                                  a(actionButton(inputId = "email1", label = "   Contact ",icon = icon("envelope", lib = "font-awesome"),
-                                                style = "background-color:#505250; color:#FFFFFF; border-color:#080808"),href="mailto:pwthom19@aacounty.org")),
-                          column(3, tags$a(img(src='BWPR_LogoVersion2.png', align = "right",height = 279*0.6, width = 558*0.6, style="padding: 0px")))
+                                                style = "background-color:#505250; color:#FFFFFF; border-color:#080808"),href="mailto:bwpr_app_support@aacounty.org"),
+                                 a(actionButton(inputId = "github1", label = "",icon = icon("github", lib = "font-awesome"),
+                                                style = "background-color:#505250; color:#FFFFFF; border-color:#080808"),href="https://github.com/joshuajdthompson",target="_blank")),
+                          column(3, tags$a(img(src='BWPR_LogoVersion2.png', align = "right",height = 279*0.55, width = 558*0.55, style="padding: 0px")))
                           #div(style="margin-bottom:10px")
                  )),
                navbarPage("",
-                          
+
                           ##===========================================================================================================================#
                           ##===========================================================================================================================#
                           ## #######################################  Riffle Sizing ####################################################################
@@ -375,15 +382,17 @@ ui = fluidPage(id = 'fP',
                                    bsTooltip(id = "rifq100L", 
                                              title = "10 feet is the minimum riffle length and is the recommended starting value."),
                                    bsTooltip(id = "rifq100H", 
-                                             title = "The recommended standard riffle height is 1 foot. However, if site specific conditions necessitate a different height, the designer may choose a value between 0-1.5 feet."),
+                                             title = "Please update value! The recommended standard riffle height is 1 foot. However, if site specific conditions necessitate a different height, the designer may choose a value between 0-1.5 feet."),
                                    bsTooltip(id = "rifq100desDepth", 
-                                             title = "For Q100, it is recommended to keep initial design depth = Parabolic Depth to minimize depth of section. Designer may lower design depth if design flow is exceeded at minimum riffle dimensions."),
+                                             title = "Please update value! For Q100, it is recommended to keep initial design depth = Parabolic Depth to minimize depth of section. Designer may lower design depth if design flow is exceeded at minimum riffle dimensions."),
                                    bsTooltip(id = "rifq100D50", 
-                                             title = "The default value is automatically populated with the recommended value for D50 for the given design discharge."),
+                                             title = "Please update value! The default value is automatically populated with the recommended value for D50 for the given design discharge."),
                                    bsTooltip(id = "rifq100Pd", 
-                                             title = "To simplify sizing and encourage compliant structures, this template links parabolic depth to the minmum allowable Width Depth Ratio. Designers should plan to re-evaluate parabolic depth based on site-specific needs. Parabolic depths exceeding 2.0 feet, are discouraged by the County, especially at the minimum width depth ratio. See note in Riffle Sizing Guidance."),
+                                             title = "Please update value! To simplify sizing and encourage compliant structures, this template links parabolic depth to the minmum allowable Width Depth Ratio. Designers should plan to re-evaluate parabolic depth based on site-specific needs. Parabolic depths exceeding 2.0 feet, are discouraged by the County, especially at the minimum width depth ratio. See note in Riffle Sizing Guidance."),
                                    bsTooltip(id = "rifq100WDR", 
-                                             title = "A ratio of 10 is the minimum allowable width depth ratio and is set as the initial value for prelminary sizing. However, the designer is encouraged to consider a higher width depth ratio when site conditions allow (e.g., when the site accomodates width without major disturbance to natural resources). When conditions allow, designers are encouraged to select a width depth ratio of up to 20. See note in 'Riffle Sizing Guidance.'"),
+                                             title = "A ratio of 10 is the minimum allowable width depth ratio and is set as the initial value for prelminary sizing. However, the designer is encouraged to consider a higher width depth ratio when site conditions allow (e.g., when the site accomodates width without major disturbance to natural resources). When conditions allow, designers are encouraged to select a width depth ratio of up to 20. See note in Riffle Sizing Guidance."),
+                                   bsTooltip(id = "rifq100Man", 
+                                             title = "Please update value!"),
                                    bsTooltip(id = "rifq100RUW", 
                                              title = "Typically for granite: 165 lbs/cf, for ferricrete (sandstone) 145 lbs/cf)"),
                                    bsTooltip(id = "rifq2desDepth", 
@@ -411,14 +420,15 @@ ui = fluidPage(id = 'fP',
                                                            h4(strong("Cascade Weir Sizing"),style="font-size:20px;font-style:normal; font-weight: 400; color: black"),
                                                            br(),
                                                            h4(strong("Site Name:"),style="font-size:14px;font-style:normal; font-weight: 400; color: black"),
-                                                           column(4,textInput("casreportName", "")), column(8,downloadButton("casReport", "Download Cascade Report",class="butt")),br()
+                                                           column(4,textInput("casreportName", "")), column(8,downloadButton("casReport", "Download Cascade Report",class="butt")),br(), br(), br(),
+                                                           h4(HTML("<b>Do you have permission from BWPR to increase cascade height beyond the maximum allowable?</b>"),style="font-size:16px;font-style:normal; font-weight: 400; color: black; text-align:left;"), br(), radioButtons("casHeightincrease", "", choices = c("Yes", "No"), selected = "No",inline=T), br(), 
                                                     ), 
                                                     column(6, style="padding-left: 7.5px; margin-left:-15px;",
                                                            h4(HTML(paste0("<b>","Q",tags$sub("100"),"</b>")),style="font-size:20px;font-style:normal; font-weight: 400; color: black; text-align:right;"),br(),
                                                            numericInput("casq100desFlow", "Design Flow (cfs)", width = NULL,value = 0, step = "any"),
                                                            numericInput("casq100W", "Width (ft)", width = NULL,value = 10, step = "any"),
                                                            numericInput("casq100L", "L, Length (ft)", width = NULL,value = 6, step = "any"),
-                                                           numericInput("casq100H", "H, Height (ft)", width = NULL,value = 3, step = "any"),
+                                                           numericInput("casq100H", "H, Height (ft)", width = NULL,value = 3, step = "any",max = 6),
                                                            numericInput("casq100desDepth", "Design Depth of flow (ft)", width = NULL,value = 0.80, step = "any"),
                                                            numericInput("casq100D50", "D50 (in)", width = NULL,value = 30, step = "any"),
                                                            numericInput("casq100Pd", HTML(paste0("<b>","P",tags$sub("D"), ", Parabolic Depth (ft)","</b>")), width = NULL,value = 2, step = "any"),
@@ -496,7 +506,7 @@ ui = fluidPage(id = 'fP',
                                    bsTooltip(id = "casq100W", 
                                              title = "It is recommended that that the designer set top width equal to calculated standard 1-foot top width (calculated using Riffle Sizing sheet). The minimum width is 10 feet.",trigger = "hover"),
                                    bsTooltip(id = "casq100H", 
-                                             title = "Cascade height should be between 1.5-6 feet. The maximum height is 6.0 feet.",trigger = "hover"),
+                                             title = "Cascade height should be between 2-5 feet. The maximum height is 5.0 feet.",trigger = "hover"),
                                    bsTooltip(id = "casq100desDepth", 
                                              title = "Calibrate deisgn depth of flow so that caclulated flow equals the desired design flow."),
                                    bsTooltip(id = "casq10desDepth", 

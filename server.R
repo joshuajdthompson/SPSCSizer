@@ -13,6 +13,7 @@
 #   Date		        Remarks
 #	-----------	   ---------------------------------------------------------------
 #	 04/10/2022    Created script                                   JThompson (JT)
+#  02/06/2022    Edited download handler                          JT
 #===============================  Environment Setup  ===========================
 #==========================================================================================
 
@@ -123,6 +124,10 @@ if(!require(shinyalert)){
 }
 
 
+if(!require(shinyvalidate)){
+  install.packages("shinyvalidate")
+  library(shinyvalidate) #'*'0.1.2'* <---  shinyvalidate version
+}
 
 
 
@@ -218,6 +223,17 @@ The calculated dimensions are a valid riffle weir solution. The designer should 
 <br><br>
 The calculated dimensions are a valid cascade weir solution. The designer should evaluate the proposed dimensions against the site constraints. The designer may further refine and optimize the top width, height, parabolic depth, and cascade length to meet the needs unique to their proposed site. The designer may proceed to size additional cascade weirs (of different dimensions) as necessary to complete the proposed design.
 </p>
+  ", type = "info", showCancelButton = TRUE, closeOnClickOutside = TRUE, size = "l", html = TRUE)
+  })
+  
+  
+  observeEvent(input$info1, {
+    shinyalert(title = "Version History",   " <div>
+<p style='font-family:palanquin;font-size:16px;font-style:normal; font-weight: 400;color: #545252; text-align: left'>
+<b>4/10/22</b> - Created app.
+<br><br>
+<b>02/03/23</b> - Edited guidance for cascade height and added warning message.
+<br>
   ", type = "info", showCancelButton = TRUE, closeOnClickOutside = TRUE, size = "l", html = TRUE)
   })
   
@@ -325,13 +341,39 @@ The calculated dimensions are a valid cascade weir solution. The designer should
     } else {
       disable('rifq100H')
       disable('rifq100desDepth')
-      disable('rifq100D50')
       disable('rifq100Pd')
       disable('rifq100Man')
     }
   })
   
   
+  ##===========================================================================================================================#
+  ##===========================================================================================================================#
+  ## #######################################  Input Validator ##################################################################
+  ##===========================================================================================================================#
+  ##===========================================================================================================================#             
+  
+  iv <- InputValidator$new()
+
+  iv$add_rule("casq100H", function(value) {
+    if (value > 5 &  input$casHeightincrease == "No") {
+      print("TRUE")
+      message = "Height must be equal to or less than 5 ft"
+    }
+  })
+  
+  observeEvent(input$casq100H, {
+    if (iv$is_valid()) {
+    } else {
+      showNotification(
+        duration = 20,
+        closeButton = TRUE,
+        ui = "Height must be equal to or less than 5 ft unless you have permission from BWPR to increase it.",
+        type = "error"
+      )
+    }
+  })
+ 
   
   
   #observeEvent(input$genSize, {
@@ -634,10 +676,10 @@ The calculated dimensions are a valid cascade weir solution. The designer should
     
     riff_tableOutput1 <- tibble(
       "Value"=c("Design Flow (cfs)","Width (ft)","L, Length (ft)","H, Height (ft)","Design Depth of flow (ft)",
-           "D50 (in)",paste0("<b>","P",tags$sub("D"), ", Parabolic Depth (ft)","</b>"), 
-           paste0("<b>","Width Depth Ratio (W/P",tags$sub("D"),")","</b>"),"Manning's n Value",
-           "Slope (ft/ft)","Rock Unit Weight (lbs/cf)","Top Width at Depth","Flow area (sf)",
-           "Hydraulic Radius","Froude Number","Isbash Maximum Velocity (ft/s)","Depth ('A') at TW/4 offset from centerline"),
+                "D50 (in)",paste0("<b>","P",tags$sub("D"), ", Parabolic Depth (ft)","</b>"), 
+                paste0("<b>","Width Depth Ratio (W/P",tags$sub("D"),")","</b>"),"Manning's n Value",
+                "Slope (ft/ft)","Rock Unit Weight (lbs/cf)","Top Width at Depth","Flow area (sf)",
+                "Hydraulic Radius","Froude Number","Isbash Maximum Velocity (ft/s)","Depth ('A') at TW/4 offset from centerline"),
       "Q100"=c(input$rifq100desFlow,input$rifq100W,input$rifq100L,input$rifq100H,
                input$rifq100desDepth,input$rifq100D50,input$rifq100Pd,input$rifq100WDR,
                input$rifq100Man,input$rifq100slope,input$rifq100RUW,input$rifq100TWaD,
@@ -656,12 +698,11 @@ The calculated dimensions are a valid cascade weir solution. The designer should
   })
   
   riff_tableOutput2 <- reactive({
-    
     riff_tableOutput2 <- tibble("Value" = c("Calculated Flow at Design Depth (cfs)", "Calculated Velocity (ft/s)", "Does the proposed section provide adequate conveyance?", "Is the proposed velocity less than the maximum allowable velocity?"),
                                 "Q100" = c(round(values$rifq100calcFlwDesDepth,2),round(values$rifq100calcVel,2),values$rifq100adeqConveyance,values$rifq100prVelLessMaxVel),
                                 "Q10" = c(round(values$rifq10calcFlwDesDepth,2),round(values$rifq10calcVel,2),values$rifq10adeqConveyance,values$rifq10prVelLessMaxVel),
                                 "Q2" = c(round(values$rifq2calcFlwDesDepth,2),round(values$rifq2calcVel,2),values$rifq2adeqConveyance,values$rifq2prVelLessMaxVel))  
-    
+
     return(riff_tableOutput2)
     
   })
@@ -682,9 +723,9 @@ The calculated dimensions are a valid cascade weir solution. The designer should
     
     cas_tableOutput1 <- tibble(
       "Value"=c("Design Flow (cfs)","Width (ft)","L, Length (ft)","H, Height (ft)","Design Depth of flow (ft)",
-        "D50 (in)",paste0("<b>","P",tags$sub("D"), ", Parabolic Depth (ft)","</b>"), "Manning's n Value",
-        "Slope (ft/ft)","Rock Unit Weight (lbs/cf)","Top Width at Depth","Flow area (sf)","Hydraulic Radius",
-        "Froude Number","Isbash Maximum Velocity (ft/s)","Depth ('A') at TW/4 offset from centerline"),
+                "D50 (in)",paste0("<b>","P",tags$sub("D"), ", Parabolic Depth (ft)","</b>"), "Manning's n Value",
+                "Slope (ft/ft)","Rock Unit Weight (lbs/cf)","Top Width at Depth","Flow area (sf)","Hydraulic Radius",
+                "Froude Number","Isbash Maximum Velocity (ft/s)","Depth ('A') at TW/4 offset from centerline"),
       "Q100"=c(input$casq100desFlow,input$casq100W,input$casq100L,input$casq100H,input$casq100desDepth,
                input$casq100D50,input$casq100Pd,input$casq100Man,input$casq100slope,input$casq100RUW,
                input$casq100TWaD,input$casq100flowA,input$casq100HR,input$casq100Fr,input$casq100ImaxVel,input$casq100DATW4),
@@ -704,7 +745,7 @@ The calculated dimensions are a valid cascade weir solution. The designer should
     
     cas_tableOutput2 <- tibble(
       "Value"=c(paste0("<b>","Q",tags$sub("100"), ", cfs","</b>"), "Pool Max Depth (ft)", "H, Height of upstream grade control structure (ft)","TW, Top width of the upstream grade control structure (ft)", 
-           paste0("<b>","y, depth of Q",tags$sub("100"), " in downstream/receiving structure","</b>"), "K, coefficient"),
+                paste0("<b>","y, depth of Q",tags$sub("100"), " in downstream/receiving structure","</b>"), "K, coefficient"),
       "Scour Values"=c(input$scDq100desFlow,input$scDPoolMaxDepthFt,input$scDHupstreamGrade,
                        input$scDTWupstreamGrade,input$scDtydownstructure,input$scDKcoeff)
     )
@@ -736,54 +777,103 @@ The calculated dimensions are a valid cascade weir solution. The designer should
   # ------------ Download Report 
   #================================ 
   
+  #output$rifReport <- downloadHandler(
+  #  # name pdf output here
+  #  filename = function() {
+  #    paste(paste0('SPSCRiffleSizingReport_',Sys.Date()), sep = '.', PDF = 'pdf')
+  #  },
+  #  content = function(file) {
+  #    tempReport <- file.path(tempdir(), "rifflereport.Rmd")
+  #    tempimage <- file.path(tempdir(), "bwpr_logo_aarivers.jpg")
+  #    file.copy("rifflereport.Rmd", tempReport, overwrite = TRUE)
+  #    file.copy("bwpr_logo_aarivers.jpg", tempimage, overwrite = TRUE)
+  #    # Set up parameters to pass to Rmd document
+  #    params <- list(sitename=input$rifreportName,
+  #                   tab1=riff_tableOutput1(),
+  #                   tab2=riff_tableOutput2(),
+  #                   tab3=riff_tableOutput3())
+  #    
+  #    # Knit the document, passing in the `params` list
+  #    rmarkdown::render(tempReport, output_file = file,
+  #                      params = params,
+  #                      envir = new.env(parent = globalenv(),pdf_document())
+  #    )
+  #  }
+  #)
+  
   output$rifReport <- downloadHandler(
-    # name pdf output here
     filename = function() {
       paste(paste0('SPSCRiffleSizingReport_',Sys.Date()), sep = '.', PDF = 'pdf')
     },
+    
     content = function(file) {
-      tempReport <- file.path(tempdir(), "rifflereport.Rmd")
-      tempimage <- file.path(tempdir(), "bwpr_logo_aarivers.jpg")
-      file.copy("rifflereport.Rmd", tempReport, overwrite = TRUE)
-      file.copy("bwpr_logo_aarivers.jpg", tempimage, overwrite = TRUE)
-      # Set up parameters to pass to Rmd document
-      params <- list(sitename=input$rifreportName,
+      src <- normalizePath('rifflereport.Rmd')
+      
+      # temporarily switch to the temp dir, in case you do not have write
+      # permission to the current working directory
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      file.copy(src, 'rifflereport.Rmd', overwrite = TRUE)
+      #Set up parameters to pass to Rmd document
+      param <- list(sitename=input$rifreportName,
                      tab1=riff_tableOutput1(),
                      tab2=riff_tableOutput2(),
                      tab3=riff_tableOutput3())
       
-      # Knit the document, passing in the `params` list
-      rmarkdown::render(tempReport, output_file = file,
-                        params = params,
-                        envir = new.env(parent = globalenv(),pdf_document())
-      )
+      out <- render('rifflereport.Rmd', params = param,pdf_document())
+      file.rename(out, file)
     }
   )
   
   output$casReport <- downloadHandler(
-    # name pdf output here
     filename = function() {
       paste(paste0('SPSCCascadeSizingReport_',Sys.Date()), sep = '.', PDF = 'pdf')
     },
+    
     content = function(file) {
-      tempReport <- file.path(tempdir(), "cascadereport.Rmd")
-      tempimage <- file.path(tempdir(), "bwpr_logo_aarivers.jpg")
-      file.copy("cascadereport.Rmd", tempReport, overwrite = TRUE)
-      file.copy("bwpr_logo_aarivers.jpg", tempimage, overwrite = TRUE)
-      # Set up parameters to pass to Rmd document
-      params <- list(sitename=input$casreportName,
-                     tab1=cas_tableOutput1(),
-                     tab2=cas_tableOutput2(),
-                     tab3=cas_tableOutput3(),
-                     tab4=cas_tableOutput4())
+      src <- normalizePath('cascadereport.Rmd')
       
-      # Knit the document, passing in the `params` list
-      rmarkdown::render(tempReport, output_file = file,
-                        params = params,
-                        envir = new.env(parent = globalenv(),pdf_document())
-      )
+      # temporarily switch to the temp dir, in case you do not have write
+      # permission to the current working directory
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      file.copy(src, 'cascadereport.Rmd', overwrite = TRUE)
+      #Set up parameters to pass to Rmd document
+      param <- list(sitename=input$casreportName,
+                    tab1=cas_tableOutput1(),
+                    tab2=cas_tableOutput2(),
+                    tab3=cas_tableOutput3(),
+                    tab4=cas_tableOutput4())
+      
+      out <- render('cascadereport.Rmd', param = param,pdf_document())
+      file.rename(out, file)
     }
   )
+  
+  #output$casReport <- downloadHandler(
+  #  # name pdf output here
+  #  filename = function() {
+  #    paste(paste0('SPSCCascadeSizingReport_',Sys.Date()), sep = '.', PDF = 'pdf')
+  #  },
+  #  content = function(file) {
+  #    tempReport <- file.path(tempdir(), "cascadereport.Rmd")
+  #    tempimage <- file.path(tempdir(), "bwpr_logo_aarivers.jpg")
+  #    file.copy("cascadereport.Rmd", tempReport, overwrite = TRUE)
+  #    file.copy("bwpr_logo_aarivers.jpg", tempimage, overwrite = TRUE)
+  #    # Set up parameters to pass to Rmd document
+  #    params <- list(sitename=input$casreportName,
+  #                   tab1=cas_tableOutput1(),
+  #                   tab2=cas_tableOutput2(),
+  #                   tab3=cas_tableOutput3(),
+  #                   tab4=cas_tableOutput4())
+  #    
+  #    # Knit the document, passing in the `params` list
+  #    rmarkdown::render(tempReport, output_file = file,
+  #                      params = params,
+  #                      envir = new.env(parent = globalenv(),pdf_document())
+  #    )
+  #  }
+  #)
   
   
 }
