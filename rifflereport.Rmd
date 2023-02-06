@@ -1,6 +1,8 @@
 ---
 title: "Riffle Weir Size Report "
-author: "Bureau of Watershed Protection and Restoration - Anne Arundel County"
+author: 
+  - "Output from the SPSC Sizer Tool v.0.1.0"
+  - "Developed by the Bureau of Watershed Protection and Restoration - Anne Arundel County"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 params: 
@@ -9,15 +11,17 @@ params:
   tab2: NA
   tab3: NA
 fontsize: 10pt
+geometry: "margin=1in,includefoot"
 header-includes:
    - \usepackage[justification=raggedright,labelfont=bf,singlelinecheck=false]{caption}
+   - \usepackage{fancyhdr}
+   - \pagestyle{fancy}
+   - \fancyhf{}
+   - \fancyhead[R]{\small ~Page \thepage}
+   - "\\fancyfoot[L]{Note: this tool is provided 'as is' without warranty of any kind, either expressed, implied, or statutory.  The user assumes the entire risk as to the quality and performance of the data from this tool.  Report is generated using user-developed and user-entered data.  Anne Arundel County makes no claims as to the validity or accuracy of the data used to develop this report or results detailed in the report.}"
 ---
 
 $$\\[1in]$$
-
-```{r bwpr_logo_aarivers, echo=FALSE, out.width = '90%'}
-knitr::include_graphics("bwpr_logo_aarivers.jpg")
-```
 
 \newpage
 
